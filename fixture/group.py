@@ -1,3 +1,5 @@
+import time
+
 class GroupHelper:
     def __init__(self, app):
         self.app = app
@@ -5,6 +7,7 @@ class GroupHelper:
     def open_group_page(self):
         wd = self.app.wd
         wd.find_element_by_link_text("groups").click()
+        time.sleep(1) # TODO: add validation that page is opened
 
     def returns_to_groups_page(self):
         wd = self.app.wd

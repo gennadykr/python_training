@@ -2,9 +2,9 @@ class ContactHelper:
     def __init__(self, app):
         self.app = app
 
-    def return_to_home_page(self):
+    def open_contact_page(self):
         wd = self.app.wd
-        wd.find_element_by_link_text("home page").click()
+        wd.find_element_by_link_text("home").click()
 
     def fill_the_field(self, field_name, text):
         wd = self.app.wd
@@ -22,6 +22,7 @@ class ContactHelper:
         self.fill_the_field("email", contact.email)
 
     def create(self, contact):
+        self.open_contact_page()
         wd = self.app.wd
         # init contact cration
         wd.find_element_by_link_text("add new").click()
@@ -29,18 +30,20 @@ class ContactHelper:
         self.fill_the_form(contact)
         # submit contact creation
         wd.find_element_by_name("submit").click()
-        self.return_to_home_page()
+        self.open_contact_page()
 
     def delete_first_contact(self):
+        self.open_contact_page()
         wd = self.app.wd
         # select first element
         wd.find_element_by_name("selected[]").click()
         # Delete
         wd.find_element_by_xpath("//input[@value='Delete']").click()
         wd.switch_to_alert().accept()
-        wd.find_element_by_link_text("home").click()
+        self.open_contact_page()
 
     def modify_first_contact(self, contact):
+        self.open_contact_page()
         wd = self.app.wd
         # Edit first element
         wd.find_element_by_xpath("//a[./*[@title='Edit']]").click()
@@ -48,4 +51,4 @@ class ContactHelper:
         self.fill_the_form(contact)
         # Update
         wd.find_element_by_name("update").click()
-        self.return_to_home_page()
+        self.open_contact_page()
