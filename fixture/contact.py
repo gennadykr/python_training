@@ -4,7 +4,11 @@ class ContactHelper:
 
     def open_contact_page(self):
         wd = self.app.wd
-        wd.find_element_by_link_text("home").click()
+        if wd.current_url.endswith("/") and len(wd.find_elements_by_name("add")) > 0:
+            #print("Already contacts page!")
+            pass
+        else:
+            wd.find_element_by_link_text("home").click()
 
     def fill_the_field(self, field_name, text):
         wd = self.app.wd
@@ -56,7 +60,4 @@ class ContactHelper:
     def count(self):
         self.open_contact_page()
         wd = self.app.wd
-        wd.implicitly_wait(3)
-        check_box_count = len(wd.find_elements_by_name("selected[]"))
-        wd.implicitly_wait(60)
-        return check_box_count
+        return len(wd.find_elements_by_name("selected[]"))

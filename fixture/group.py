@@ -6,12 +6,18 @@ class GroupHelper:
 
     def open_group_page(self):
         wd = self.app.wd
-        wd.find_element_by_link_text("groups").click()
-        time.sleep(1) # TODO: add validation that page is opened
+        if wd.current_url.endswith("/group.php") and len(wd.find_elements_by_name("new")) > 0:
+            #print("Already group page!")
+            pass
+        else:
+            wd.find_element_by_link_text("groups").click()
 
     def returns_to_groups_page(self):
-        wd = self.app.wd
-        wd.find_element_by_link_text("group page").click()
+        self.open_group_page()
+        #wd = self.app.wd
+        #if not (wd.current_url.endswith("/group.php") and len(wd.find_elements_by_name("new")) > 0):
+        #    print("Already on group page!")
+        #    wd.find_element_by_link_text("group page").click()
 
     def fill_the_form(self,group):
         wd = self.app.wd
@@ -63,7 +69,4 @@ class GroupHelper:
     def count(self):
         self.open_group_page()
         wd = self.app.wd
-        wd.implicitly_wait(6)
-        check_box_count = len(wd.find_elements_by_name("selected[]"))
-        wd.implicitly_wait(60)
-        return check_box_count
+        return len(wd.find_elements_by_name("selected[]"))
