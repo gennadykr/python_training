@@ -52,3 +52,11 @@ class ContactHelper:
         # Update
         wd.find_element_by_name("update").click()
         self.open_contact_page()
+
+    def count(self):
+        self.open_contact_page()
+        wd = self.app.wd
+        wd.implicitly_wait(3)
+        check_box_count = len(wd.find_elements_by_name("selected[]"))
+        wd.implicitly_wait(60)
+        return check_box_count
