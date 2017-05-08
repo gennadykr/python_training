@@ -1,4 +1,4 @@
-import time
+from model.group import Group
 
 class GroupHelper:
     def __init__(self, app):
@@ -70,3 +70,14 @@ class GroupHelper:
         self.open_group_page()
         wd = self.app.wd
         return len(wd.find_elements_by_name("selected[]"))
+
+    def get_list(self):
+        self.open_group_page()
+        wd = self.app.wd
+        groups = []
+        for element in wd.find_elements_by_css_selector("span.group"):
+            name = element.text
+            id = element.find_element_by_name("selected[]").get_attribute("value")
+            groups.append(Group(name=name,id=id))
+        #print(groups)
+        return groups
