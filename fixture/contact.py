@@ -37,6 +37,7 @@ class ContactHelper:
         # submit contact creation
         wd.find_element_by_name("submit").click()
         self.open_contact_page()
+        self.contact_cache = None
 
     def delete_first_contact(self):
         self.open_contact_page()
@@ -47,6 +48,7 @@ class ContactHelper:
         wd.find_element_by_xpath("//input[@value='Delete']").click()
         wd.switch_to_alert().accept()
         self.open_contact_page()
+        self.contact_cache = None
 
     def modify_first_contact(self, contact):
         self.open_contact_page()
@@ -58,21 +60,27 @@ class ContactHelper:
         # Update
         wd.find_element_by_name("update").click()
         self.open_contact_page()
+        self.contact_cache = None
 
     def count(self):
         self.open_contact_page()
         wd = self.app.wd
         return len(wd.find_elements_by_name("selected[]"))
 
+    contact_cache = None
+
     def get_list(self):
-        self.open_contact_page()
-        wd = self.app.wd
-        contacts = []
-        for element in wd.find_elements_by_css_selector("tr[name=entry]"):
-            id = element.find_element_by_name("selected[]").get_attribute("value")
-            tds = element.find_elements_by_css_selector("td")
-            last_name = tds[1].text
-            first_name = tds[2].text
-            contacts.append(Contact(id=id, name=first_name, surname=last_name))
-        #print(contacts)
-        return contacts
+        if self.contact_cache is None:
+            print("No contact cache")
+            self.open_contact_page()
+            wd = self.app.wd
+            self.contact_cache = []
+            for element in wd.find_elements_by_css_selector("tr[name=entry]"):
+                id = element.find_element_by_name("selected[]").get_attribute("value")
+                tds = element.find_elements_by_css_selector("td")
+                last_name = tds[1].text
+                first_name = tds[2].text
+                self.contact_cache.append(Contact(id=id, name=first_name, surname=last_name))
+        else:
+            print("Will use cached contact list")
+        return list(self.contact_cache)
