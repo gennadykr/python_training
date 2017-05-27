@@ -12,20 +12,29 @@ class ContactHelper:
         else:
             wd.find_element_by_link_text("home").click()
 
+    def get_the_field(self, field_name):
+        wd = self.app.wd
+        return wd.find_element_by_name(field_name).get_attribute("value")
+
     def fill_the_field(self, field_name, text):
         wd = self.app.wd
         if text is not None:
-            wd.find_element_by_name(field_name).click()
-            wd.find_element_by_name(field_name).clear()
-            wd.find_element_by_name(field_name).send_keys(text)
+            element = wd.find_element_by_name(field_name)
+            element.click()
+            element.clear()
+            element.send_keys(text)
 
     def fill_the_form(self, contact):
         wd = self.app.wd
         self.fill_the_field("firstname",contact.name)
         self.fill_the_field("lastname", contact.surname)
         self.fill_the_field("address", contact.address)
-        self.fill_the_field("home", contact.phone)
+        self.fill_the_field("home", contact.phone_home)
+        self.fill_the_field("mobile", contact.phone_mobile)
+        self.fill_the_field("work", contact.phone_work)
         self.fill_the_field("email", contact.email)
+        self.fill_the_field("email2", contact.email2)
+        self.fill_the_field("email3", contact.email3)
 
     def create(self, contact):
         self.open_contact_page()
@@ -68,6 +77,25 @@ class ContactHelper:
         self.open_contact_page()
         self.contact_cache = None
 
+    def get_contact_info_from_edit_page_by_index(self, index):
+        self.open_contact_page()
+        wd = self.app.wd
+        wd.find_elements_by_xpath("//a[./*[@title='Edit']]")[index].click()
+        name = self.get_the_field("firstname")
+        surname = self.get_the_field("lastname")
+        address = self.get_the_field("address")
+        phone_home = self.get_the_field("home")
+        phone_mobile = self.get_the_field("mobile")
+        phone_work = self.get_the_field("work")
+        email = self.get_the_field("email")
+        email2 = self.get_the_field("email2")
+        email3 = self.get_the_field("email3")
+        self.open_contact_page()
+        return Contact(name=name, surname=surname, address=address,
+                       phone_home=phone_home, phone_mobile=phone_mobile, phone_work=phone_work,
+                       email=email, email2=email2, email3=email3)
+
+
     def count(self):
         self.open_contact_page()
         wd = self.app.wd
@@ -86,7 +114,11 @@ class ContactHelper:
                 tds = element.find_elements_by_css_selector("td")
                 last_name = tds[1].text
                 first_name = tds[2].text
-                self.contact_cache.append(Contact(id=id, name=first_name, surname=last_name))
+                address = tds[3].text
+                all_emails = tds[4].text
+                all_phones = tds[5].text
+                self.contact_cache.append(Contact(id=id, name=first_name, surname=last_name,
+                                                  address=address, all_emails=all_emails, all_phones=all_phones))
         else:
             print("Will use cached contact list")
         return list(self.contact_cache)
