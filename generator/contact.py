@@ -1,4 +1,4 @@
-from model.group import Group
+from model.contact import Contact
 import random
 import string
 import json
@@ -9,14 +9,14 @@ import jsonpickle
 
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "n:f:", ["number of groups", "file"])
+    opts, args = getopt.getopt(sys.argv[1:], "n:f:", ["number of contacts", "file"])
 except:
     getopt.usage()
     sys.exit(2)
 
 
 n = 5
-f = "data/groups.json"
+f = "data/contacts.json"
 
 
 for o, a in opts:
@@ -27,15 +27,15 @@ for o, a in opts:
 
 
 def random_string(prefix, maxlen):
-    # + string.punctuation
-    # " " in the end of name lead to error too!
-    symbols = string.ascii_letters + string.digits + " "*10
+    symbols = string.ascii_letters + string.digits + " "*10 + string.punctuation
     return prefix + "".join([random.choice(symbols) for i in range(random.randrange(maxlen))])
 
 
-testdata = [Group(name="", header="", footer="")] + [
-    Group(name=random_string("name",10), header=random_string("header",20), footer=random_string("footer",20))
-    for i in range(n)
+#TODO: remove tailer space
+testdata = [Contact(name="", surname="", address="")] + [
+    Contact(name=random_string("Name",10), surname=random_string("Familia",10), address=random_string("Home",20),
+            phone_home=random_string("555", 7), email=random_string("email", 20) + "@example.com")
+    for i in range(5)
 ]
 
 
