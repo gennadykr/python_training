@@ -2,7 +2,7 @@ import os
 import json
 import pytest
 from fixture.application import Application
-
+import importlib
 
 fixture = None
 target = None
@@ -30,8 +30,19 @@ def stop(request):
     request.addfinalizer(fin)
     return fixture
 
+
 def pytest_addoption(parser):
     parser.addoption("--browser", action="store", default="chrome")
     #parser.addoption("--base_url", action="store", default="http://localhost/addressbook/")
     parser.addoption("--target", action="store", default="target.json")
 
+
+def pytest_generate_tests(metafunc):
+    for fixture in metafunc.fixturenames:
+        if fixture.startswith("data_"):
+            testdata = load_from_module(fixture[5:])
+            metafunc.parametrize(fixture, testdata, ids=[str(x) for x in testdata])
+
+
+def load_from_module(module):
+    return importlib.import_module("data.%s" % module).testdata
