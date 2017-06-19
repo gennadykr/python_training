@@ -94,6 +94,16 @@ class GroupHelper:
         self.returns_to_groups_page()
         self.group_cache = None
 
+    def modify_group_by_id(self, id, group):
+        self.open_group_page()
+        wd = self.app.wd
+        self.select_element_by_id(id)
+        wd.find_element_by_name("edit").click()
+        self.fill_the_form(group)
+        wd.find_element_by_name("update").click()
+        self.returns_to_groups_page()
+        self.group_cache = None
+
     def count(self):
         self.open_group_page()
         wd = self.app.wd
@@ -114,3 +124,7 @@ class GroupHelper:
         else:
             print("Group cache will be used")
         return list(self.group_cache)
+
+    def compare(self, group_list):
+        cleaned_group_list = map(Group.clean, group_list)
+        assert sorted(cleaned_group_list, key=Group.id_or_max) == sorted(self.get_list(), key=Group.id_or_max)

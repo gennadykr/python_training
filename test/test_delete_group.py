@@ -1,6 +1,5 @@
 from model.group import Group
 import random
-import re
 
 
 def test_delete_group(app, db, check_ui):
@@ -14,9 +13,4 @@ def test_delete_group(app, db, check_ui):
     old_groups.remove(group)
     assert old_groups == new_groups
     if check_ui:
-        def clean(group):
-            name = group.name.strip()
-            name = re.sub('  ', ' ', name)
-            return Group(id=group.id, name=name)
-        cleaned_new_groups = map(clean, new_groups)
-        assert sorted(cleaned_new_groups, key=Group.id_or_max) == sorted(app.group.get_list(), key=Group.id_or_max)
+        app.group.compare(new_groups)

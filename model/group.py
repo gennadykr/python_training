@@ -1,4 +1,5 @@
 from sys import maxsize
+import re
 
 class Group:
 
@@ -19,3 +20,8 @@ class Group:
             return int(self.id)
         else:
             return maxsize
+
+    def clean(self):
+        name = self.name.strip()
+        name = re.sub('  ', ' ', name)
+        return Group(id=self.id, name=name)
