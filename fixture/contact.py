@@ -1,4 +1,5 @@
 from model.contact import Contact
+from selenium.webdriver.support.select import Select
 
 
 class ContactHelper:
@@ -11,7 +12,7 @@ class ContactHelper:
             # print("Already contacts page!")
             pass
         else:
-            wd.find_element_by_link_text("home").click()
+            wd.find_element_by_css_selector("#logo").click()
 
     def get_the_field(self, field_name):
         wd = self.app.wd
@@ -146,3 +147,38 @@ class ContactHelper:
     def compare(self, contact_list):
         cleaned_contact_list = map(Contact.clean, contact_list)
         assert sorted(cleaned_contact_list, key=Contact.id_or_max) == sorted(self.get_list(), key=Contact.id_or_max)
+
+    # Добавить контакт в группу:
+    # - выбрать по ID
+    # - выбрать группу в выпадающем списке
+    # - добавить
+    def add_contact_to_group(self, id, group_id):
+        self.open_contact_page()
+        wd = self.app.wd
+        wd.find_element_by_css_selector("input[value='%s']" % id).click()
+
+        add_to_group_selector = wd.find_element_by_css_selector("select[name='to_group']")
+        selector = Select(add_to_group_selector)
+        selector.select_by_value(group_id)
+        wd.find_element_by_css_selector("input[name='add']").click()
+
+        self.open_contact_page()
+        self.contact_cache = None
+
+    # Удалить контакт из группы
+    # - выбрать группу
+    # - выбрать контакт по ID
+    # - Remove
+    def remove_contact_from_group(self, id, group_id):
+        self.open_contact_page()
+        wd = self.app.wd
+
+        group_selector = wd.find_element_by_css_selector("select[name='group']")
+        selector = Select(group_selector)
+        selector.select_by_value(group_id)
+
+        wd.find_element_by_css_selector("input[value='%s']" % id).click()
+        wd.find_element_by_css_selector("input[name='remove']").click()
+
+        self.open_contact_page()
+        self.contact_cache = None
