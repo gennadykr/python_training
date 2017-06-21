@@ -1,5 +1,6 @@
 from model.contact import Contact
 
+
 class ContactHelper:
     def __init__(self, app):
         self.app = app
@@ -7,7 +8,7 @@ class ContactHelper:
     def open_contact_page(self):
         wd = self.app.wd
         if wd.current_url.endswith("/") and len(wd.find_elements_by_name("add")) > 0:
-            #print("Already contacts page!")
+            # print("Already contacts page!")
             pass
         else:
             wd.find_element_by_link_text("home").click()
@@ -62,6 +63,15 @@ class ContactHelper:
         self.open_contact_page()
         self.contact_cache = None
 
+    def delete_contact_by_id(self, id):
+        self.open_contact_page()
+        wd = self.app.wd
+        wd.find_element_by_css_selector("input[value='%s']" % id).click()
+        wd.find_element_by_xpath("//input[@value='Delete']").click()
+        wd.switch_to_alert().accept()
+        self.open_contact_page()
+        self.contact_cache = None
+
     def modify_first_contact(self, contact):
         self.modify_contact_by_index(index=0,contact=contact)
 
@@ -73,6 +83,16 @@ class ContactHelper:
         # fill the form
         self.fill_the_form(contact)
         # Update
+        wd.find_element_by_name("update").click()
+        self.open_contact_page()
+        self.contact_cache = None
+
+    def modify_contact_by_id(self, id, contact):
+        self.open_contact_page()
+        wd = self.app.wd
+        row_with_id = wd.find_element_by_xpath("//tr[.//input[@value='%s']]" % id)
+        row_with_id.find_element_by_xpath(".//a[./*[@title='Edit']]").click()
+        self.fill_the_form(contact)
         wd.find_element_by_name("update").click()
         self.open_contact_page()
         self.contact_cache = None
@@ -125,14 +145,4 @@ class ContactHelper:
 
     def compare(self, contact_list):
         cleaned_contact_list = map(Contact.clean, contact_list)
-        l1 = sorted(cleaned_contact_list, key=Contact.id_or_max)
-        l2 = sorted(self.get_list(), key=Contact.id_or_max)
-        print(l1)
-        print(l2)
-        for idx, val in enumerate(l1):
-            print(idx)
-            print(l1[idx])
-            print(l2[idx])
-            assert l1[idx] == l2[idx]
-        assert l1 == l2
-        #assert sorted(contact_list, key=Contact.id_or_max) == sorted(self.get_list(), key=Contact.id_or_max)
+        assert sorted(cleaned_contact_list, key=Contact.id_or_max) == sorted(self.get_list(), key=Contact.id_or_max)
