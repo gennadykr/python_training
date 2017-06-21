@@ -1,4 +1,5 @@
 from sys import maxsize
+import re
 
 class Contact:
     def __init__(self, name=None, surname=None, address=None,
@@ -31,3 +32,10 @@ class Contact:
             return int(self.id)
         else:
             return maxsize
+
+    def clean(self):
+        name = self.name.strip()
+        name = re.sub('  ', ' ', name)
+        surname = self.surname.strip()
+        surname = re.sub('  ', ' ', surname)
+        return Contact(id=self.id, name=name, surname=surname)

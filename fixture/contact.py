@@ -122,3 +122,17 @@ class ContactHelper:
         else:
             print("Will use cached contact list")
         return list(self.contact_cache)
+
+    def compare(self, contact_list):
+        cleaned_contact_list = map(Contact.clean, contact_list)
+        l1 = sorted(cleaned_contact_list, key=Contact.id_or_max)
+        l2 = sorted(self.get_list(), key=Contact.id_or_max)
+        print(l1)
+        print(l2)
+        for idx, val in enumerate(l1):
+            print(idx)
+            print(l1[idx])
+            print(l2[idx])
+            assert l1[idx] == l2[idx]
+        assert l1 == l2
+        #assert sorted(contact_list, key=Contact.id_or_max) == sorted(self.get_list(), key=Contact.id_or_max)
