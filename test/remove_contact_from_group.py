@@ -1,7 +1,7 @@
 # Найти группу, если нет, то создать
 # Найти контакт, если нет, то создать
 # Проверить, что контакт в групппе, если нет, то добавить
-# Удалить контакт из группы, проверить, что его в группе нет.
+# Удалить контакт из группы, проверить, что его в группе нет (а других изменений в группе нет)
 
 from model.contact import Contact
 from model.group import Group
@@ -20,5 +20,9 @@ def test_remove_contact_from_group(app, db):
     if contact not in db.get_contacts_in_group(group=group):
         app.contact.add_contact_to_group(id=contact.id, group_id=group.id)
 
+    old_contacts_in_group = db.get_contacts_in_group(group=group)
+    old_contacts_in_group.remove(contact)
+
     app.contact.remove_contact_from_group(id=contact.id, group_id=group.id)
-    assert contact in db.get_contacts_not_in_group(group=group)
+    assert sorted(old_contacts_in_group, key=Contact.id_or_max) == \
+           sorted(db.get_contacts_in_group(group=group), key=Contact.id_or_max)
