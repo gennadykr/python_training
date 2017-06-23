@@ -1,11 +1,16 @@
 from model.group import Group
+import pytest
 
 def test_add_group(app, db, json_groups, check_ui):
     group = json_groups
-    old_groups = db.get_group_list()
-    app.group.create(group)
-    new_groups = db.get_group_list()
-    old_groups.append(group)
-    assert sorted(old_groups, key=Group.id_or_max) == sorted(new_groups, key=Group.id_or_max)
+    with pytest.allure.step('Given a group list'):
+        old_groups = db.get_group_list()
+    with pytest.allure.step('When I add a group %s to the list' % group):
+        app.group.create(group)
+    with pytest.allure.step('Then the new group list is equal to the old list with the added group'):
+        new_groups = db.get_group_list()
+        old_groups.append(group)
+        assert sorted(old_groups, key=Group.id_or_max) == sorted(new_groups, key=Group.id_or_max)
     if check_ui:
-        app.group.compare(new_groups)
+        with pytest.allure.step('Then groups from database are the same as from UI'):
+            app.group.compare(new_groups)
